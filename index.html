@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secret Santa Wishes 🎅</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff7f0;--card:#ffffff;--ink:#2b2323;--muted:#7a6a6a;--green:#1f6b45;--gold:#e0a526;--line:#f0d9d0;--field:#fffaf6;--flake:#9fc4e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#16201b;--card:#1f2c25;--ink:#f6ece6;--muted:#b9aaa2;--green:#4fbf85;--gold:#f0c24a;--line:#35483d;--field:#17231d;--flake:#9fc4e8}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#16201b;--card:#1f2c25;--ink:#f6ece6;--muted:#b9aaa2;--green:#4fbf85;--gold:#f0c24a;--line:#35483d;--field:#17231d;--flake:#9fc4e8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:repeating-linear-gradient(135deg,transparent 0 54px,rgba(255,255,255,.26) 54px 64px,transparent 64px 110px,rgba(255,255,255,.14) 110px 114px,transparent 114px 170px,rgba(255,255,255,.2) 170px 176px) #c62839 fixed;color:var(--ink);min-height:100vh;font-family:"Quicksand",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;overflow-x:hidden}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.fx i{position:absolute;font-style:normal;color:#fff;text-shadow:0 0 2px #2f7fc8,0 0 8px rgba(120,185,255,.95),0 0 14px rgba(120,185,255,.6);animation:fall linear infinite}
+.fx i.fly{top:auto;color:inherit;text-shadow:none;animation:fly linear infinite}
+@keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(115vh) rotate(360deg)}}
+@keyframes fly{0%{transform:translateX(-20vw) translateY(0)}50%{transform:translateX(55vw) translateY(-18px)}100%{transform:translateX(125vw) translateY(0)}}
+@media (prefers-reduced-motion:reduce){.fx{display:none}}
+main{position:relative;z-index:1;max-width:580px;margin:0 auto;padding:20px 16px 48px}
+.hero{background:linear-gradient(160deg,#c62839,#8f1a2a);color:#fff;border-radius:28px;padding:30px 22px 26px;text-align:center;box-shadow:0 10px 30px rgba(143,26,42,.3);border:4px dashed rgba(255,255,255,.5);outline:6px solid #1f6b45}
+.hero .row{font-size:40px;line-height:1.1;letter-spacing:6px}
+.hero small{letter-spacing:.2em;text-transform:uppercase;font-size:12px;opacity:.9}
+.hero h1{font-family:"Pacifico","Brush Script MT",cursive;font-weight:400;font-size:38px;margin:8px 0 6px;line-height:1.15}
+.hero p{margin:0;opacity:.95}
+.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:20px 0}
+.chip{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 14px;font-size:14px}
+.chip b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:22px 18px;margin-top:18px}
+h2{font-family:"Pacifico","Brush Script MT",cursive;font-weight:400;color:var(--green);margin:0 0 12px;font-size:26px}
+.rule{display:flex;gap:12px;padding:12px 0;border-bottom:2px dotted var(--line)}
+.rule:last-of-type{border-bottom:0}
+.rule .n{flex:none;width:34px;height:34px;border-radius:50%;background:#c62839;color:#fff;font-weight:700;display:grid;place-items:center}
+.rule h3{margin:0 0 2px;font-size:16px}
+.rule p{margin:0;font-size:14px;color:var(--muted)}
+.ex{margin-top:6px;font-size:13.5px;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.ex s{opacity:.7}
+.ex span{color:var(--green);font-weight:600}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--field);border:2px solid var(--line);border-radius:14px;padding:11px 13px}
+input:focus,textarea:focus{outline:3px solid var(--gold);border-color:var(--gold)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:4px}
+.go{margin-top:20px;width:100%;font:inherit;font-weight:700;font-size:17px;padding:14px;border:0;border-radius:16px;background:#c62839;color:#fff;cursor:pointer;box-shadow:0 4px 0 #8f1a2a}
+.go:active{transform:translateY(2px);box-shadow:0 2px 0 #8f1a2a}
+.go[disabled]{opacity:.6}
+.msg{margin-top:14px;padding:12px 14px;border-radius:14px;font-size:14px}
+.ok{background:rgba(31,107,69,.15);border:2px solid var(--green)}
+.warn{background:rgba(224,165,38,.18);border:2px solid var(--gold)}
+.hostrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.dl{font:inherit;font-weight:700;padding:10px 14px;border-radius:12px;border:2px solid var(--green);background:transparent;color:var(--green);cursor:pointer}
+.tablewrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:380px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.hidden{display:none}
+footer{text-align:center;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;margin:22px auto 0;width:fit-content;max-width:100%}
+</style>
+</head>
+<body>
+<div class="fx" id="fx" aria-hidden="true"></div>
+<main>
+  <section class="hero">
+    <div class="row">🦌🎅🦌</div>
+    <small>You’re invited to our</small>
+    <h1>Christmas Party</h1>
+    <p>Secret Santa edition: tell us what you’d love to be gifted 🎁</p>
+  </section>
+
+  <section class="details">
+    <div class="chip"><b>📅 Date</b>Saturday, 5 December 2026</div>
+    <div class="chip"><b>⏰ Time</b>6:00 PM onwards</div>
+    <div class="chip"><b>📍 Venue</b>To be announced 🤫</div>
+  </section>
+
+  <section class="card">
+    <h2>Wish list rules</h2>
+    <p style="margin:0 0 6px;font-size:14px;color:var(--muted)">Your Secret Santa will read what you write, so make it fun to decode!</p>
+
+    <div class="rule"><div class="n">1</div><div>
+      <h3>Keep it under ₹250 💸</h3>
+      <p>The gift should not be worth more than ₹250. Think thoughtful, not expensive. Small, quirky and clever all win.</p>
+    </div></div>
+
+    <div class="rule"><div class="n">2</div><div>
+      <h3>Don’t name the gift 🙈</h3>
+      <p>No exact item, no brand, no product links. Your Santa should get to be a little creative and surprise you.</p>
+      <div class="ex"><s>“A black leather wallet”</s> → <span>“Something sleek I’d carry everywhere, that makes me feel put together.”</span></div>
+    </div></div>
+
+    <div class="rule"><div class="n">3</div><div>
+      <h3>Describe the vibe ✨</h3>
+      <p>Be vague about the specifics. Tell us about a mood, a colour, a texture, a hobby or the moment you’d use it. What would make you smile when you unwrap it?</p>
+      <div class="ex"><s>“A scented candle”</s> → <span>“Cosy rainy-evening energy, something that makes my room smell like a warm hug.”</span></div>
+    </div></div>
+  </section>
+
+  <section class="card" id="formCard">
+    <h2>Your wish 🎄</h2>
+    <form name="secret-santa-wishes" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success.html">
+      <input type="hidden" name="form-name" value="secret-santa-wishes">
+      <p class="hidden">
+        <label>Don’t fill this out: <input name="bot-field"></label>
+      </p>
+      <label for="name">Your name</label>
+      <input id="name" name="name" autocomplete="name" maxlength="80" placeholder="Santa’s favourite guest" required>
+
+      <label for="wish">Describe the gift you’d love</label>
+      <textarea id="wish" name="wish" rows="6" maxlength="600" placeholder="Think vibe, colours, mood, hobbies… not the exact item!" required></textarea>
+      <div class="hint">Remember: under ₹250, and no exact item names. Be mysterious 🕵️</div>
+
+      <button class="go" type="submit">Send my wish 🎅</button>
+    </form>
+  </section>
+
+  <footer>Made with love, snow &amp; a few reindeer ❄️🦌</footer>
+</main>
+
+<script>
+(function(){
+  var fx=document.getElementById('fx'),flakes=['❄','❅','❆'];
+  function add(txt,cls,css){
+    var e=document.createElement('i');e.textContent=txt;if(cls)e.className=cls;
+    for(var k in css)e.style[k]=css[k];fx.appendChild(e);
+  }
+  for(var i=0;i<55;i++){
+    add(flakes[i%3],'',{
+      left:Math.random()*100+'%',
+      fontSize:(20+Math.random()*30)+'px',
+      opacity:(.85+Math.random()*.15),
+      animationDuration:(8+Math.random()*10)+'s',
+      animationDelay:(-Math.random()*18)+'s'
+    });
+  }
+  for(var j=0;j<4;j++){
+    add('🦌','fly',{
+      top:(8+j*22+Math.random()*8)+'%',
+      fontSize:(26+Math.random()*12)+'px',
+      animationDuration:(22+Math.random()*14)+'s',
+      animationDelay:(-Math.random()*30)+'s'
+    });
+  }
+  add('🎅','fly',{top:'14%',fontSize:'40px',animationDuration:'46s',animationDelay:'-12s'});
+  add('🎅','fly',{top:'68%',fontSize:'34px',animationDuration:'62s',animationDelay:'-40s'});
+})();
+</script>
+</body>
+</html>
